@@ -5,27 +5,41 @@ const testData = require("../fixtures/testData");
 test("Get Users", async ({ request }) => {
   const api = new ApiHelper(request);
 
-  await api.login(testData.validUser);
+  // Login
+  const loginResponse = await api.login(testData.validUser);
+  expect(loginResponse.status()).toBe(200);
 
-  const response = await api.getUsers();
+  const loginBody = await loginResponse.json();
+  const token = loginBody.token;
+
+  // Get Users
+  const response = await api.getUsers(token);
 
   expect(response.status()).toBe(200);
 
   const users = await response.json();
 
-  expect(users.length).toBeGreaterThan(0);
+  expect(users.success).toBe(true);
+  expect(users.data.length).toBeGreaterThan(0);
 });
 
 test("Get Profile", async ({ request }) => {
   const api = new ApiHelper(request);
 
-  await api.login(testData.validUser);
+  // Login
+  const loginResponse = await api.login(testData.validUser);
+  expect(loginResponse.status()).toBe(200);
 
-  const response = await api.getProfile();
+  const loginBody = await loginResponse.json();
+  const token = loginBody.token;
+
+  // Get Profile
+  const response = await api.getProfile(token);
 
   expect(response.status()).toBe(200);
 
   const profile = await response.json();
 
-  expect(profile.email).toBe(testData.validUser.email);
+  expect(profile.success).toBe(true);
+  expect(profile.data.email).toBe(testData.validUser.email);
 });

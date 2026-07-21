@@ -4,18 +4,21 @@ on:
   push:
     branches:
       - main
+      - master
   pull_request:
     branches:
       - main
+      - master
 
 jobs:
-  playwright-api-tests:
+  test:
     runs-on: ubuntu-latest
 
     env:
       PORT: ${{ secrets.PORT }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      BASE_URL: http://127.0.0.1:3000
       EMAIL: ${{ secrets.EMAIL }}
       PASSWORD: ${{ secrets.PASSWORD }}
 
@@ -27,12 +30,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
+      - name: Start Express Server
+        run: |
+          node src/server.js &
+          sleep 15
 
       - name: Run Playwright Tests
         run: npx playwright test
@@ -42,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report
+          path: playwright-report/

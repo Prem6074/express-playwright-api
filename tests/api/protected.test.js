@@ -10,7 +10,7 @@ test.beforeAll(async ({ request }) => {
     },
   });
 
-  expect(response.ok()).toBeTruthy();
+  expect(response.status()).toBe(200);
 
   const body = await response.json();
   token = body.token;
@@ -27,7 +27,8 @@ test("Get User Profile", async ({ request }) => {
 
   const profile = await response.json();
 
-  expect(profile.email).toBe("prem@test.com");
+  expect(profile.success).toBe(true);
+  expect(profile.data.email).toBe("prem@test.com");
 });
 
 test("Get All Users", async ({ request }) => {
@@ -41,5 +42,6 @@ test("Get All Users", async ({ request }) => {
 
   const users = await response.json();
 
-  expect(users.length).toBeGreaterThan(0);
+  expect(users.success).toBe(true);
+  expect(users.data.length).toBeGreaterThan(0);
 });
