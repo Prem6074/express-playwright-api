@@ -1,20 +1,35 @@
 class ApiHelper {
     constructor(request) {
       this.request = request;
+      this.token = "";
     }
   
     async login(user) {
-      return await this.request.post("/api/auth/login", {
+      const response = await this.request.post("/api/auth/login", {
         data: user,
       });
+  
+      const body = await response.json();
+  
+      this.token = body.token;
+  
+      return response;
     }
   
     async getUsers() {
-      return await this.request.get("/api/users");
+      return await this.request.get("/api/users", {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
     }
   
     async getProfile() {
-      return await this.request.get("/api/users/profile");
+      return await this.request.get("/api/users/profile", {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
     }
   }
   

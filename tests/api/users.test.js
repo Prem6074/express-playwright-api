@@ -1,8 +1,11 @@
 const { test, expect } = require("@playwright/test");
 const ApiHelper = require("../helpers/ApiHelper");
+const testData = require("../fixtures/testData");
 
 test("Get Users", async ({ request }) => {
   const api = new ApiHelper(request);
+
+  await api.login(testData.validUser);
 
   const response = await api.getUsers();
 
@@ -16,11 +19,13 @@ test("Get Users", async ({ request }) => {
 test("Get Profile", async ({ request }) => {
   const api = new ApiHelper(request);
 
+  await api.login(testData.validUser);
+
   const response = await api.getProfile();
 
   expect(response.status()).toBe(200);
 
   const profile = await response.json();
 
-  expect(profile.name).toBe("Prem");
+  expect(profile.email).toBe(testData.validUser.email);
 });

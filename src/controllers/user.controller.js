@@ -1,28 +1,18 @@
-const getUsers = (req, res) => {
-    res.status(200).json([
-      {
-        id: 1,
-        name: "Prem",
-        role: "QA"
-      },
-      {
-        id: 2,
-        name: "John",
-        role: "Developer"
-      }
-    ]);
-  };
-  
-  const getProfile = (req, res) => {
-    res.status(200).json({
-      id: 1,
-      name: "Prem",
-      email: "admin@test.com",
-      role: "QA Engineer"
-    });
-  };
-  
-  module.exports = {
-    getUsers,
-    getProfile
-  };
+const User = require("../models/User");
+
+const getUsers = async (req, res) => {
+  const users = await User.find().select("-password");
+
+  res.status(200).json(users);
+};
+
+const getProfile = async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+
+  res.status(200).json(user);
+};
+
+module.exports = {
+  getUsers,
+  getProfile,
+};
