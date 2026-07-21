@@ -16,6 +16,8 @@ jobs:
       PORT: ${{ secrets.PORT }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      EMAIL: ${{ secrets.EMAIL }}
+      PASSWORD: ${{ secrets.PASSWORD }}
 
     steps:
       - name: Checkout Repository
