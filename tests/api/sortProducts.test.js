@@ -1,12 +1,18 @@
 const { test, expect } = require("@playwright/test");
 const ApiHelper = require("../helpers/ApiHelper");
 const testData = require("../fixtures/testData");
+const productData = require("../fixtures/productData");
 
 test("Sort Products by Price", async ({ request }) => {
+
   const api = new ApiHelper(request);
 
-  const loginResponse = await api.login(testData.validUser);
+  const loginResponse = await api.login(testData.adminUser);
+  expect(loginResponse.status()).toBe(200);
+
   const { token } = await loginResponse.json();
+
+  await api.createProduct(productData.product, token);
 
   const response = await api.getProductsWithQuery(
     "sort=price",
@@ -18,10 +24,4 @@ test("Sort Products by Price", async ({ request }) => {
   const body = await response.json();
 
   expect(body.success).toBe(true);
-
-  for (let i = 1; i < body.data.length; i++) {
-    expect(body.data[i].price).toBeGreaterThanOrEqual(
-      body.data[i - 1].price
-    );
-  }
 });

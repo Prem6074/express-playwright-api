@@ -1,14 +1,13 @@
 const { test, expect } = require("@playwright/test");
+const ApiHelper = require("../helpers/ApiHelper");
+const testData = require("../fixtures/testData");
 
 let token;
 
 test.beforeAll(async ({ request }) => {
-  const response = await request.post("/api/auth/login", {
-    data: {
-      email: "prem@test.com",
-      password: "password123",
-    },
-  });
+  const api = new ApiHelper(request);
+
+  const response = await api.login(testData.customerUser);
 
   expect(response.status()).toBe(200);
 
@@ -17,31 +16,27 @@ test.beforeAll(async ({ request }) => {
 });
 
 test("Get User Profile", async ({ request }) => {
-  const response = await request.get("/api/users/profile", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const api = new ApiHelper(request);
+
+  const response = await api.getProfile(token);
 
   expect(response.status()).toBe(200);
 
-  const profile = await response.json();
+  const body = await response.json();
 
-  expect(profile.success).toBe(true);
-  expect(profile.data.email).toBe("prem@test.com");
+  expect(body.success).toBe(true);
+  expect(body.data.email).toBe(testData.customerUser.email);
 });
 
 test("Get All Users", async ({ request }) => {
-  const response = await request.get("/api/users", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const api = new ApiHelper(request);
+
+  const response = await api.getUsers(token);
 
   expect(response.status()).toBe(200);
 
-  const users = await response.json();
+  const body = await response.json();
 
-  expect(users.success).toBe(true);
-  expect(users.data.length).toBeGreaterThan(0);
+  expect(body.success).toBe(true);
+  expect(body.data.length).toBeGreaterThan(0);
 });

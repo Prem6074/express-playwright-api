@@ -1,30 +1,33 @@
 const { test, expect } = require("@playwright/test");
 const ApiHelper = require("../helpers/ApiHelper");
+const testUsers = require("../fixtures/testUsers");
 const testData = require("../fixtures/testData");
 
-test("Get user by ID", async ({ request }) => {
+test("Get User By ID", async ({ request }) => {
   const api = new ApiHelper(request);
 
-  // Login
-  const loginResponse = await api.login(testData.validUser);
+  // Login as Admin
+  const loginResponse = await api.login(testData.adminUser);
   expect(loginResponse.status()).toBe(200);
 
-  const loginBody = await loginResponse.json();
-  const token = loginBody.token;
+  const { token } = await loginResponse.json();
 
-  // Get all users
-  const usersResponse = await api.getUsers(token);
-  expect(usersResponse.status()).toBe(200);
-
-  const usersBody = await usersResponse.json();
-  const userId = usersBody.data[0]._id;
-
-  // Get user by ID
-  const response = await api.getUserById(userId, token);
+  // Get Customer By ID
+  const response = await api.getUserById(
+    testUsers.customer.id,
+    token
+  );
 
   expect(response.status()).toBe(200);
 
   const body = await response.json();
+  console.log("Response:", body);
+
   expect(body.success).toBe(true);
-  expect(body.data._id).toBe(userId);
+
+  // Your API returns the user inside "data"
+  expect(body.data).toBeDefined();
+  expect(body.data._id).toBe(testUsers.customer.id);
+  expect(body.data.email).toBe(testUsers.customer.email);
+  expect(body.data.role).toBe("customer");
 });

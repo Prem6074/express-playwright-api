@@ -5,13 +5,15 @@ const testData = require("../fixtures/testData");
 test("Login with valid credentials", async ({ request }) => {
   const api = new ApiHelper(request);
 
-  const response = await api.login(testData.validUser);
+  // Login as Admin
+  const response = await api.login(testData.adminUser);
 
   expect(response.status()).toBe(200);
 
   const body = await response.json();
 
   expect(body.success).toBe(true);
+  expect(body.message).toBe("Login Successful");
   expect(body.token).toBeTruthy();
 });
 
@@ -25,4 +27,5 @@ test("Login with invalid credentials", async ({ request }) => {
   const body = await response.json();
 
   expect(body.success).toBe(false);
+  expect(body.message).toBe("Invalid Credentials");
 });

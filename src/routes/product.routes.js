@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../middleware/auth.middleware");
+const admin = require("../middleware/admin.middleware");
 
 const {
   createProduct,
@@ -11,18 +12,19 @@ const {
   deleteProduct,
 } = require("../controllers/product.controller");
 
-// Create Product
-router.post("/", auth, createProduct);
+// Create Product (Admin Only)
+router.post("/", auth, admin, createProduct);
 
-// Get All Products
+// Get All Products (Authenticated Users)
 router.get("/", auth, getProducts);
 
-// Get Product by ID
+// Get Product By ID (Authenticated Users)
 router.get("/:id", auth, getProductById);
 
-// Update Product
-router.put("/:id", auth, updateProduct);
+// Update Product (Admin Only)
+router.put("/:id", auth, admin, updateProduct);
 
-// Delete Product
-router.delete("/:id", auth, deleteProduct);
+// Delete Product (Admin Only)
+router.delete("/:id", auth, admin, deleteProduct);
+
 module.exports = router;

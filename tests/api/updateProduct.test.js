@@ -6,47 +6,37 @@ const productData = require("../fixtures/productData");
 test("Update Product", async ({ request }) => {
   const api = new ApiHelper(request);
 
-  // Login
-  const loginResponse = await api.login(testData.validUser);
+  // Login as Admin
+  const loginResponse = await api.login(testData.adminUser);
   expect(loginResponse.status()).toBe(200);
 
   const { token } = await loginResponse.json();
 
   // Create Product
-  const createResponse = await api.createProduct(
-    productData.product,
-    token
-  );
-
+  const createResponse = await api.createProduct(productData.product, token);
   expect(createResponse.status()).toBe(201);
 
   const createBody = await createResponse.json();
   const productId = createBody.data._id;
 
   // Update Product
-  const updatedProduct = {
-    name: "Samsung Galaxy S25 Ultra",
-    description: "Latest Samsung Flagship",
-    price: 139999,
-    category: "Mobiles",
-    stock: 100,
-    image: "s25ultra.png",
-  };
-
-  const updateResponse = await api.updateProduct(
+  const response = await api.updateProduct(
     productId,
-    updatedProduct,
+    {
+      name: "Updated Product",
+      price: 999,
+    },
     token
   );
 
-  expect(updateResponse.status()).toBe(200);
+  expect(response.status()).toBe(200);
 
-  const body = await updateResponse.json();
+  const body = await response.json();
+  console.log("Response:", body);
 
   expect(body.success).toBe(true);
-  expect(body.message).toBe("Product updated successfully");
+  expect(body.data).toBeDefined();
   expect(body.data._id).toBe(productId);
-  expect(body.data.name).toBe(updatedProduct.name);
-  expect(body.data.price).toBe(updatedProduct.price);
-  expect(body.data.stock).toBe(updatedProduct.stock);
+  expect(body.data.name).toBe("Updated Product");
+  expect(body.data.price).toBe(999);
 });

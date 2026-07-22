@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const { defineConfig } = require("@playwright/test");
 
 module.exports = defineConfig({
@@ -9,8 +7,10 @@ module.exports = defineConfig({
     baseURL: process.env.BASE_URL || "http://127.0.0.1:3000",
   },
 
-  reporter: [
-    ["list"],
-    ["html"],
-  ],
+  webServer: {
+    command: "npm start",
+    url: "http://127.0.0.1:3000",
+    reuseExistingServer: true,
+    timeout: 120000,
+  },
 });
